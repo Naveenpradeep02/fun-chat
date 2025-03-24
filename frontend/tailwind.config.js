@@ -42,5 +42,8 @@ export default {
       "nord",
       "sunset",
     ],
+    width: {
+      custom: "100%",
+    },
   },
 };
