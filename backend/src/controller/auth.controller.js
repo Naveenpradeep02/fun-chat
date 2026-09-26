@@ -74,7 +74,7 @@ export const login = async (req, res, next) => {
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "invalid password",
       });
     }
@@ -88,12 +88,18 @@ export const login = async (req, res, next) => {
     });
   } catch (error) {
     console.log("error in login ", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 // logout
 export const logout = (req, res, next) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.cookie("jwt", "", {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+    });
     res.status(200).json({
       message: "logout successfully !",
     });
@@ -109,7 +115,7 @@ export const updateProfile = async (req, res, next) => {
     const userId = req.user._id;
 
     if (!profilePic) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "profile pic is required",
       });
     }
@@ -119,7 +125,7 @@ export const updateProfile = async (req, res, next) => {
       {
         profilePic: uploadResponse.secure_url,
       },
-      { new: true }
+      { new: true },
     );
 
     res.status(200).json(updateUser);

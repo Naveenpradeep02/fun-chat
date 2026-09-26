@@ -1,7 +1,6 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
-import cloudinary from "cloudinary";
-import { get } from "mongoose";
+import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export const getUserForSidebar = async (req, res, next) => {
@@ -27,7 +26,7 @@ export const getMessages = async (req, res, next) => {
         { senderId: myId, receiverId: userToChatId },
         { senderId: userToChatId, receiverId: myId },
       ],
-    });
+    }).sort({ createdAt: 1 });
 
     res.status(200).json(message);
   } catch (error) {

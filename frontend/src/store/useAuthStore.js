@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
 const baseURL =
-  import.meta.env.MODE === "development" ? "http://localhost:8000" : "/";
+  process.env.NODE_ENV === "development" ? "http://localhost:8000" : "/";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -12,7 +12,7 @@ export const useAuthStore = create((set, get) => ({
   isLoggingIng: false,
   isUpdatingProfile: false,
   isCheckingAuth: true,
-  onlineUser: "",
+  onlineUser: [],
   socket: null,
   checkAuth: async () => {
     try {
@@ -37,7 +37,7 @@ export const useAuthStore = create((set, get) => ({
       toast.success("SignUp Successfully");
       get().connectSocket();
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to sign up");
     } finally {
       set({ isSingingUp: false });
     }
@@ -46,14 +46,14 @@ export const useAuthStore = create((set, get) => ({
   logIn: async (data) => {
     set({ isLoggingIng: true });
     try {
-      const res = await axiosInstance.post("auth/login", data);
+      const res = await axiosInstance.post("/auth/login", data);
 
       set({ authUser: res.data });
       toast.success("Login Successfully!");
 
       get().connectSocket();
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to login");
     } finally {
       set({ isLoggingIng: false });
     }
@@ -66,7 +66,7 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Log Out Successfully !");
       get().disConnectSocket();
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to logout");
     }
   },
 
@@ -78,7 +78,9 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Profile Upload successfully");
     } catch (error) {
       console.log("error in upload image");
-      toast.error(error.response.data.message);
+      toast.error(
+        error.response?.data?.message || "Failed to upload profile picture",
+      );
     } finally {
       set({ isUpdatingProfile: false });
     }

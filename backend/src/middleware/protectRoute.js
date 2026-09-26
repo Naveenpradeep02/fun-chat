@@ -29,7 +29,15 @@ export const protectRoute = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.log("error in protected route");
+    console.log("error in protected route:", error.message);
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError"
+    ) {
+      return res.status(401).json({
+        message: "unauthorized - invalid or expired token",
+      });
+    }
     res.status(500).json({
       message: "internal error",
     });

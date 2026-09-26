@@ -12,7 +12,7 @@ import { Toaster } from "react-hot-toast";
 import { useThemeStore } from "./store/useTheme";
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth, onlineUser } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
   const { theme } = useThemeStore();
 
